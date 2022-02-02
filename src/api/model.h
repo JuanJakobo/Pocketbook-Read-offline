@@ -9,8 +9,10 @@
 #ifndef MODEL
 #define MODEL
 
+#include <string>
+
 struct Entry
 {
-    int id = 0;
+    std::string id;
 };
 #endif

@@ -28,7 +28,7 @@ public:
         */
     PocketView(const irect *contentRect, const std::vector<PocketItem> &pocketItems, int page = 1);
 
-    std::vector<int> getEntriesTillPage(); 
+    std::vector<std::string> getEntriesTillPage(); 
 
     PocketItem *getCurrentEntry() { return getEntry(_selectedEntry); };
 

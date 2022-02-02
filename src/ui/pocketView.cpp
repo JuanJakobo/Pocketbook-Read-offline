@@ -43,9 +43,9 @@ PocketView::PocketView(const irect *contentRect, const vector<PocketItem> &pocke
     draw();
 }
 
-vector<int> PocketView::getEntriesTillPage()
+vector<std::string> PocketView::getEntriesTillPage()
 {
-    std::vector<int> temp;
+    std::vector<std::string> temp;
     {
         for (size_t i = 0; i < _entries.size(); i++)
         {

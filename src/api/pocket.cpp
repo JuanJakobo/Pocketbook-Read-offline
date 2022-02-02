@@ -170,60 +170,7 @@ vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
 
 void Pocket::getText(PocketItem *item)
 {
-    if(!Util::connectToNetwork())
-        Log::writeInfoLog("no internet");
-    //leave!
-
-    std::string data = "consumer_key=" + CONSUMER_KEY + "&url=" + item->url + "&images=1";
-
-    string url = "https://text.getpocket.com/v3/text";
-
-    string readBuffer;
-    CURLcode res;
-    CURL *curl = curl_easy_init();
-
-    if (curl)
-    {
-        struct curl_slist *headers = NULL;
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Util::writeCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
-
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-
-        if (res == CURLE_OK)
-        {
-            long response_code;
-            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-
-            switch (response_code)
-            {
-            case 200:
-                {
-                    //responseCode?
-                    //wordCount?
-                    nlohmann::json j = nlohmann::json::parse(readBuffer);
-
-                    if (j["article"].is_string()){
-                        item->path = Util::createHtml(item->title, j["article"]);
-                    }
-                    break;
-                }
-                //TODO get http status and x-error-code
-                //handle invalid access token !
-            default:
-                //TODO catch
-                throw std::runtime_error("HTML Error Code" + std::to_string(response_code));
-            }
-        }
-        else
-        {
-            Log::writeErrorLog("pocket API: " + url + " RES Error Code: " + std::to_string(res));
-            throw std::runtime_error("Curl RES Error Code " + std::to_string(res));
-        }
-    }
+    
 }
 
 void Pocket::sendItems(string action, const vector<PocketItem> &items)
