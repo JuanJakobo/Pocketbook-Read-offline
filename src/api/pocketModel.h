@@ -26,6 +26,7 @@ struct PocketItem : Entry
     std::string status;
     std::string url;
     std::string excerpt;
+    std::string path;
     int reading_time; //in min
     bool starred;
     IsDownloaded downloaded = IsDownloaded::NOTDOWNLOADED;

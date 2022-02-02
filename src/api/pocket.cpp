@@ -160,6 +160,12 @@ vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
 
 }
 
+void Pocket::getText(PocketItem *item)
+{
+}
+
+}
+
 nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
 {
     if(!Util::connectToNetwork())

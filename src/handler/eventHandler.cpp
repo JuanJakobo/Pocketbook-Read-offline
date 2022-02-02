@@ -203,12 +203,13 @@ int EventHandler::pointerHandler(const int type, const int par1, const int par2)
                 _pocketView->invertCurrentEntryColor();
 
 
-                int dialogResult = DialogSynchro(ICON_QUESTION, "Action",(_pocketView->getCurrentEntry()->title + "\n" + _pocketView->getCurrentEntry()->excerpt + "...").c_str(), "Read article", "Cancel", NULL);
+                int dialogResult = DialogSynchro(ICON_INFORMATION, "Action",(_pocketView->getCurrentEntry()->title + "\n" + _pocketView->getCurrentEntry()->excerpt + "...").c_str(), "Read article", "Cancel", NULL);
                 switch (dialogResult)
                 {
                     case 1:
                         {
-                            Message(ICON_INFORMATION, "Information","currently not implemented", 1000);
+                            _pocket->getText(_pocketView->getCurrentEntry());
+                            OpenBook(_pocketView->getCurrentEntry()->path.c_str(),"",0);
                             break;
                         }
                     default:

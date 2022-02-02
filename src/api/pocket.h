@@ -36,6 +36,13 @@ class Pocket
         std::vector<PocketItem> getItems(bool unread, bool archive, bool favorited);
 
 
+        /**
+        *
+        * Gets the text and images, creates an html out of it and stores the path inside the item
+        *
+        * @param item for that the text shall be downloaded
+        */
+        void getText(PocketItem *item);
 
     private:
         std::string _accessToken;
