@@ -61,6 +61,7 @@ public:
 private:
     static std::unique_ptr<EventHandler> _eventHandlerStatic;
     std::unique_ptr<PocketView> _pocketView;
+    std::vector<PocketItem> _items;
     std::unique_ptr<Pocket> _pocket;
     MainMenu _menu = MainMenu("Readoffline");
     ContextMenu _contextMenu = ContextMenu();

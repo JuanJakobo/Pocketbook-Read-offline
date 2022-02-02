@@ -79,10 +79,23 @@ string Pocket::getAccessToken(const string &code){
     //save authorize code
 }
 
-vector<PocketItem> Pocket::getItems(){
-    //TODO do as json
-    //make last things variable
-    nlohmann::json j = post("get","{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + _accessToken  + "\", \"count\":\"10\",\"detailType\":\"complete\"}");
+vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
+{
+    string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + _accessToken  + "\", \"count\":\"10\",\"detailType\":\"complete\",";
+    postData += "\"state\":";
+    if(unread && archive)
+        postData += "\"all\"";
+    else if(!unread && archive)
+        postData += "\"archive\"";
+    else if(unread && !archive)
+        postData += "\"unread\"";
+
+    if(favorited)
+        postData += ",\"favorite\":\"1\"";
+
+    postData += "}";
+
+    nlohmann::json j = post("get",postData);
     //nlohmann::json j = post("get","{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + accessToken  + "\", \"count\":\"10\",\"detailType\":\"complete\", \"contentType\":\"article\"}");
     //use since
     //favorite 1 for favorite
@@ -104,17 +117,28 @@ vector<PocketItem> Pocket::getItems(){
             string is_article = element.value()["is_article"];
             if(is_article == "1"){
                 if(element.value()["item_id"].is_string()){
-                    string id = element.value()["item_id"];
-                    temp.id = std::atoi(id.c_str());
+                    temp.id = element.value()["item_id"];
                 }
                 if(element.value()["resolved_title"].is_string())
                     temp.title = element.value()["resolved_title"];
                 if(element.value()["given_url"].is_string())
                     temp.url = element.value()["given_url"];
-                //favorite --> 1 is favorite
-                temp.starred = false;
-                //status --> 1 item is archived, 2 item shall be deleted
-                temp.status = "archived";
+                if(!element.value()["favorite"].is_null())
+                {
+                    if(element.value()["favorite"] == "0")
+                        temp.starred = false;
+                    else
+                        temp.starred = true;
+                }
+                if(!element.value()["status"].is_null())
+                {
+                    if(element.value()["status"] == "1")
+                        temp.status = "archived";
+                    else if(element.value()["status"] == "2")
+                        temp.status = "shall be deleted";
+                    else
+                        temp.status = "unread";
+                }
                 if(element.value()["excerpt"].is_string())
                     temp.excerpt = element.value()["excerpt"];
                 //word_count --> only for article
@@ -142,7 +166,6 @@ nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
         Log::writeInfoLog("no internet");
 
     string url = POCKET_URL + apiEndpoint;
-    Log::writeInfoLog(url);
 
     string readBuffer;
     CURLcode res;
@@ -157,7 +180,6 @@ nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Util::writeCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 

@@ -48,8 +48,12 @@ EventHandler::EventHandler()
         iv_mkdir(IMAGE_FOLDER.c_str(), 0777);
 
     _pocket = std::unique_ptr<Pocket>(new Pocket());
-    vector<PocketItem> test = _pocket->getItems();
-    drawPocketItems(test);
+    _items = _pocket->getItems(true,false,false);
+    if(_items.empty())
+        Log::writeInfoLog("no items");
+    else
+        drawPocketItems(_items);
+
 }
      
 EventHandler::~EventHandler()
@@ -84,11 +88,21 @@ void EventHandler::mainMenuHandler(const int index)
             //show unread
         case 102:
             {
+                _items = _pocket->getItems(true,false,false);
+                if(_items.empty())
+                    Log::writeInfoLog("no items");
+                else
+                    drawPocketItems(_items);
                 break;
             }
             //show starred
         case 103:
             {
+                _items = _pocket->getItems(true,true,true);
+                if(_items.empty())
+                    Log::writeInfoLog("no items");
+                else
+                    drawPocketItems(_items);
                 break;
             }
             //sync items
