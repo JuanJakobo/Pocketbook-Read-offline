@@ -83,6 +83,7 @@ void EventHandler::mainMenuHandler(const int index)
         //show downloaded
         case 101:
             {
+                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
                 break;
             }
             //show unread
@@ -108,6 +109,7 @@ void EventHandler::mainMenuHandler(const int index)
             //sync items
         case 104:
             {
+                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
                 break;
             }
             //Mark as read till page
@@ -139,20 +141,18 @@ void EventHandler::contextMenuHandler(const int index)
 {
     switch (index)
     {
-        case 101:
-            {
-                break;
-            }
             //Mark/Unmark to download
         case 102:
             {
+                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
                 break;
             }
             //Unstar/Star
         case 103:
             {
+                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
                 //TODO check if starred/unstarred
-                _pocket->sendItems("favorite", _items);
+                //_pocket->sendItems("favorite", _items);
                 break;
             }
         default:
