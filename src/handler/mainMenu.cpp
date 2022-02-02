@@ -30,13 +30,12 @@ MainMenu::MainMenu(const string &name)
     DrawLine(0, _panelMenuHeight - 1, ScreenWidth(), _panelMenuHeight - 1, BLACK);
 
     _contentRect = iRect(0, _panelMenuHeight, ScreenWidth(), (ScreenHeight() - _panelMenuHeight), 0);
-    
     SetPanelType(0);
     PartialUpdate(0, _panelMenuBeginY, ScreenWidth(), _panelMenuHeight);
 }
 
 MainMenu::~MainMenu()
-{  
+{
     CloseFont(_menuFont);
     free(_menu);
     free(_info);

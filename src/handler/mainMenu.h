@@ -53,7 +53,7 @@ private:
     char *_showUnread = strdup("Show unread");
     char *_showStarred = strdup("Show starred");
     char *_showDownloaded = strdup("Show downloaded");
-    char *_markAsReadTillPage = strdup("Mark as read till page");
+    char *_markAsReadTillPage = strdup("Archive till page");
     char *_info = strdup("Info");
     char *_exit = strdup("Close App");
 

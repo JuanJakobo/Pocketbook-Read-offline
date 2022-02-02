@@ -19,8 +19,7 @@ ContextMenu::~ContextMenu()
 {
     free(_menu);
     free(_star);
-		free(_download);
-    free(_browser);
+    free(_download);
 }
 
 int ContextMenu::createMenu(int y, const iv_menuhandler &handler, bool starred, const std::string &downloaded)
@@ -30,16 +29,13 @@ int ContextMenu::createMenu(int y, const iv_menuhandler &handler, bool starred, 
         text = "Unstar";
 
     _star = strdup(text.c_str());
-	
-		_download = strdup(downloaded.c_str());
+    _download = strdup(downloaded.c_str());
 
     imenu contextMenu[] =
         {
             {ITEM_HEADER, 0, _menu, NULL},
             {ITEM_ACTIVE, 102, _download, NULL},
             {ITEM_ACTIVE, 103, _star, NULL},
-            {ITEM_ACTIVE, 104, _browser, NULL},
-
             {0, 0, NULL, NULL}};
 
     OpenMenu(contextMenu, 0, ScreenWidth(), y, handler);

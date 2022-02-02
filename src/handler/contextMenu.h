@@ -36,6 +36,5 @@ private:
     char *_menu = strdup("Menu");
     char *_star;
     char *_download;
-    char *_browser = strdup("Browser");
 };
 #endif
