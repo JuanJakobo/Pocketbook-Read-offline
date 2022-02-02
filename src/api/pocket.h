@@ -16,6 +16,15 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
+enum pocketActions {
+    ADD, //Add a new item
+    ARCHIVE, //Move an item to the archive
+    READD, //Unarchive an item 
+    FAVORITE, //Mark an item as favorite
+    UNVFAVORITE, //unfavorite an item
+    DELETE //permanently remove an item
+};
+
 const std::string POCKET_URL = "https://getpocket.com/v3/";
 const std::string CONSUMER_KEY = "<CONSUMER_KEY>";
 
@@ -43,6 +52,15 @@ class Pocket
         * @param item for that the text shall be downloaded
         */
         void getText(PocketItem *item);
+
+        /**
+         *
+         * Modify a Users Pocket Data
+         *
+         * @param
+         */
+        void sendItems(std::string action, const std::vector<PocketItem> &items);
+
 
     private:
         std::string _accessToken;

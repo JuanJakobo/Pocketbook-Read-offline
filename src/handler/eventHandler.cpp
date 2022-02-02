@@ -113,6 +113,7 @@ void EventHandler::mainMenuHandler(const int index)
             //Mark as read till page
         case 105:
             {
+                _pocket->sendItems("archive", _items);
                 break;
             }
         case 107:
@@ -150,12 +151,8 @@ void EventHandler::contextMenuHandler(const int index)
             //Unstar/Star
         case 103:
             {
-                break;
-            }
-            //Browser
-        case 104:
-            {
-                Util::openInBrowser(_pocketView->getCurrentEntry()->url);
+                //TODO check if starred/unstarred
+                _pocket->sendItems("favorite", _items);
                 break;
             }
         default:
@@ -183,7 +180,7 @@ int EventHandler::pointerHandler(const int type, const int par1, const int par2)
             else if(_pocketView->getCurrentEntry()->downloaded == IsDownloaded::DOWNLOADED)
                 downloaded = "Remove item";
 
-            _contextMenu.createMenu(par2, EventHandler::contextMenuHandlerStatic,true , downloaded);
+            _contextMenu.createMenu(par2, EventHandler::contextMenuHandlerStatic,_pocketView->getCurrentEntry()->starred , downloaded);
             return 1;
         }
     }

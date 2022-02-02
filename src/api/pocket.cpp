@@ -12,7 +12,6 @@
 #include "pocket.h"
 #include "pocketModel.h"
 
-
 #include <string>
 #include <vector>
 #include <curl/curl.h>
@@ -79,8 +78,20 @@ string Pocket::getAccessToken(const string &code){
     //save authorize code
 }
 
+//show unread, show archived, show favorited
+//TODO state unread, archive or all
+//favorite 0 unfavorited, 1 favorited
+//test basic vs complete
+//only get article?
 vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
 {
+    //
+    //always since and the rest store in sqlite --> all since can be udpates since have been modified
+    //what happens if a article is deleted?
+    //get favorite
+    //get state unread (default) get archive
+    //
+    //
     string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + _accessToken  + "\", \"count\":\"10\",\"detailType\":\"complete\",";
     postData += "\"state\":";
     if(unread && archive)
@@ -96,7 +107,6 @@ vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
     postData += "}";
 
     nlohmann::json j = post("get",postData);
-    //nlohmann::json j = post("get","{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + accessToken  + "\", \"count\":\"10\",\"detailType\":\"complete\", \"contentType\":\"article\"}");
     //use since
     //favorite 1 for favorite
     //contentType? -> articles?
@@ -139,17 +149,15 @@ vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
                     else
                         temp.status = "unread";
                 }
+                //TODO modify!
                 if(element.value()["excerpt"].is_string())
                     temp.excerpt = element.value()["excerpt"];
                 //word_count --> only for article
                 //time_added
-                //lang
                 if(element.value()["time_to_read"].is_number()){
                     temp.reading_time = element.value()["time_to_read"];
                 }
 
-                //has_images --> contains array images --> item_id, image_id, src, widht, height
-                //if(element.value()["has_images"] > 0)
 
                 tempItems.push_back(temp);
             }
@@ -162,14 +170,94 @@ vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
 
 void Pocket::getText(PocketItem *item)
 {
+    if(!Util::connectToNetwork())
+        Log::writeInfoLog("no internet");
+    //leave!
+
+    std::string data = "consumer_key=" + CONSUMER_KEY + "&url=" + item->url + "&images=1";
+
+    string url = "https://text.getpocket.com/v3/text";
+
+    string readBuffer;
+    CURLcode res;
+    CURL *curl = curl_easy_init();
+
+    if (curl)
+    {
+        struct curl_slist *headers = NULL;
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Util::writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+
+        if (res == CURLE_OK)
+        {
+            long response_code;
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+
+            switch (response_code)
+            {
+            case 200:
+                {
+                    //responseCode?
+                    //wordCount?
+                    nlohmann::json j = nlohmann::json::parse(readBuffer);
+
+                    if (j["article"].is_string()){
+                        item->path = Util::createHtml(item->title, j["article"]);
+                    }
+                    break;
+                }
+                //TODO get http status and x-error-code
+                //handle invalid access token !
+            default:
+                //TODO catch
+                throw std::runtime_error("HTML Error Code" + std::to_string(response_code));
+            }
+        }
+        else
+        {
+            Log::writeErrorLog("pocket API: " + url + " RES Error Code: " + std::to_string(res));
+            throw std::runtime_error("Curl RES Error Code " + std::to_string(res));
+        }
+    }
 }
 
+void Pocket::sendItems(string action, const vector<PocketItem> &items)
+{
+
+    std::string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\",\"access_token\":\"" + _accessToken  + "\",\"actions\":[";
+
+    auto comma = false;
+    for(auto item : items)
+    {
+        if(comma)
+            postData += ',';
+        postData += "{\"action\":\"" + action + "\",\"item_id\":\"" + item.id + "\"}";
+        if(!comma)
+            comma = true;
+    }
+    postData += "]}";
+    nlohmann::json j = post("send",postData);
+
+
+    //https://getpocket.com/v3/send
+    //consumer_key
+    //access_token
+    //actions
+    //archive and readd --> unread / read
+    //favorite unfavorite --> star /unstar
+    //delete --> deletes it complety
 }
 
 nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
 {
     if(!Util::connectToNetwork())
         Log::writeInfoLog("no internet");
+    //TODO leave!
 
     string url = POCKET_URL + apiEndpoint;
 
@@ -207,6 +295,7 @@ nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
            //TODO get http status and x-error-code 
            //handle invalid access token !
             default:
+                //TODO catch
                 throw std::runtime_error("HTML Error Code" + std::to_string(response_code));
             }
         }
