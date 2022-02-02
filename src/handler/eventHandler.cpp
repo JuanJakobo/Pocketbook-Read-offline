@@ -49,10 +49,7 @@ EventHandler::EventHandler()
 
     _pocket = std::unique_ptr<Pocket>(new Pocket());
     _items = _pocket->getItems(true,false,false);
-    if(_items.empty())
-        Log::writeInfoLog("no items");
-    else
-        drawPocketItems(_items);
+    drawPocketItems(_items);
 
 }
      
@@ -90,20 +87,14 @@ void EventHandler::mainMenuHandler(const int index)
         case 102:
             {
                 _items = _pocket->getItems(true,false,false);
-                if(_items.empty())
-                    Log::writeInfoLog("no items");
-                else
-                    drawPocketItems(_items);
+                drawPocketItems(_items);
                 break;
             }
             //show starred
         case 103:
             {
                 _items = _pocket->getItems(true,true,true);
-                if(_items.empty())
-                    Log::writeInfoLog("no items");
-                else
-                    drawPocketItems(_items);
+                drawPocketItems(_items);
                 break;
             }
             //sync items
