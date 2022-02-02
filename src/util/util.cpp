@@ -13,6 +13,8 @@
 
 #include <string>
 #include <curl/curl.h>
+#include <iostream>
+#include <fstream>
 
 using std::string;
 
@@ -130,21 +132,67 @@ string Util::getData(const string &url)
     return {};
 }
 
-void Util::openInBrowser(const string &url)
+string Util::createHtml(string title, string content)
 {
-    //TODO use browser --> in child??
-    //string cmd = "exec /ebrmain/bin/webbrowser.sh www.google.de";
-    //string cmd = "/ebrmain/bin/browser.app \"" + _minifluxView->getEntry(_tempItemID)->url + "\"";
-    ///ebrmain/bin/webbrowser.sh "https://insideevs.com/news/514727/tesla-towing-70mph-fast-charging/"
+    //just the body is replaced!
+//< html > < head >< / head > <body > CONTENT_HERE < / body > < / html >
+//It's unstyled, it's up to you to supply a stylesheet to make it look how you want.  You'd probably also want to create your own header that displays the title, bylines, etc.
+    const std::string forbiddenInFiles = "<>\\/:?\"|";
 
-    string cmd = "/ebrmain/bin/webbrowser.sh \"google.de\"";
+    std::transform(title.begin(), title.end(), title.begin(), [&forbiddenInFiles](char c)
+            { return forbiddenInFiles.find(c) != std::string::npos ? ' ' : c; });
 
-    cmd = "/ebrmain/bin/browser.app \"google.de\"";
+    string path = ARTICLE_FOLDER + "/" + title + ".html";
+    if (iv_access(path.c_str(), W_OK) != 0)
+    {
+        string result = content;
 
-    //string cmd = "/ebrmain/bin/webbrowser.sh \"" + url + "\"";
+        auto found = content.find("<img");
+        auto counter = 0;
+        while (found != std::string::npos)
+        {
+            auto imageFolder = "img/" + title;
 
-    system(cmd.c_str());
-    //execlp(cmd.c_str(), cmd.c_str(), (char *)NULL);
+            if (iv_access((ARTICLE_FOLDER + "/" + imageFolder).c_str(), W_OK) != 0)
+                iv_mkdir((ARTICLE_FOLDER + "/" + imageFolder).c_str(), 0777);
+
+            auto imagePath = imageFolder + "/" + std::to_string(counter);
+
+            content = content.substr(found);
+            auto src = content.find("src=\"");
+            content = content.substr(src + 5);
+            auto end = content.find("\"");
+            auto imageURL = content.substr(0, end);
+
+            if (iv_access((ARTICLE_FOLDER + "/" + imagePath).c_str(), W_OK) != 0)
+            {
+                try
+                {
+                    std::ofstream img;
+                    img.open(ARTICLE_FOLDER + "/" + imagePath);
+                    img << Util::getData(imageURL);
+                    img.close();
+                }
+                catch (const std::exception &e)
+                {
+                    Log::writeErrorLog(e.what());
+                }
+
+                auto toReplace = result.find(imageURL);
+
+                if (toReplace != std::string::npos)
+                    result.replace(toReplace, imageURL.length(), imagePath);
+            }
+            counter++;
+            found = content.find("<img");
+        }
+
+        std::ofstream htmlfile;
+        htmlfile.open(path);
+        htmlfile << result;
+        htmlfile.close();
+    }
+    return path;
 }
 
 void Util::decodeHTML(string &data)
@@ -170,4 +218,5 @@ void Util::replaceAll(std::string &data, const std::string &replace, const std::
         data.replace(start, replace.size(), by);
         start += by.length();
     }
+
 }
