@@ -97,15 +97,18 @@ vector<PocketItem> Pocket::getItems()
     vector<PocketItem> tempItems;
     for (const auto &element : j["list"].items()){
         PocketItem temp;
-        //also needs to get the rest
-        if(!element.value()["is_article"].is_null()){
-            string is_article = element.value()["is_article"];
-            if(is_article == "1"){
-                if(element.value()["item_id"].is_string()){
-                    temp.id = element.value()["item_id"];
-                }
-                if(element.value()["resolved_title"].is_string())
-                    temp.title = element.value()["resolved_title"];
+        if(element.value()["item_id"].is_string()){
+            temp.id = element.value()["item_id"];
+        }
+        if(element.value()["given_url"].is_string())
+            temp.url = element.value()["given_url"];
+        if(!element.value()["favorite"].is_null())
+        {
+            if(element.value()["favorite"] == "0")
+                temp.starred = false;
+            else
+                temp.starred = true;
+        }
         if(!element.value()["status"].is_null())
         {
             if(element.value()["status"] == "0")
@@ -115,19 +118,18 @@ vector<PocketItem> Pocket::getItems()
             else if(element.value()["status"] == "2")
                 temp.status = IStatus::TODELETE;
         }
-                //TODO modify!
-                if(element.value()["excerpt"].is_string())
-                    temp.excerpt = element.value()["excerpt"];
-                //word_count --> only for article
-                //time_added
-                if(element.value()["time_to_read"].is_number()){
-                    temp.reading_time = element.value()["time_to_read"];
-                }
-
-
-                tempItems.push_back(temp);
-            }
+        if(element.value()["resolved_title"].is_string())
+        {
+            temp.title = element.value()["resolved_title"];
+            temp.path = ARTICLE_FOLDER + "/" + Util::clearString(temp.title) + ".html";
         }
+        if(element.value()["excerpt"].is_string())
+            temp.excerpt = element.value()["excerpt"];
+        if(element.value()["time_to_read"].is_number()){
+            temp.reading_time = element.value()["time_to_read"];
+        }
+
+        tempItems.push_back(temp);
     }
 
     return tempItems;
