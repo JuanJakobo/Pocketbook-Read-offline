@@ -48,11 +48,20 @@ EventHandler::EventHandler()
         iv_mkdir(IMAGE_FOLDER.c_str(), 0777);
 
     _pocket = std::unique_ptr<Pocket>(new Pocket());
-    _items = _pocket->getItems(true,false,false);
+    _items = _sqliteCon.selectPocketEntries(IsDownloaded::DOWNLOADED);
+    for(size_t i = 0; i < _items.size(); i++)
+    {
+        if (iv_access(_items.at(i).path.c_str(), W_OK) != 0)
+        {
+            _items.at(i).downloaded =  IsDownloaded::NOTDOWNLOADED;
+            _sqliteCon.updateDownloadStatusPocketItem(_items.at(i).id, IsDownloaded::NOTDOWNLOADED);
+            break;
+        }
+    }
     drawPocketItems(_items);
 
 }
-     
+
 EventHandler::~EventHandler()
 {
     Log::writeInfoLog("delete eventHandler");
@@ -80,7 +89,8 @@ void EventHandler::mainMenuHandler(const int index)
         //show downloaded
         case 101:
             {
-                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
+                _items = _sqliteCon.selectPocketEntries(IsDownloaded::DOWNLOADED);
+                drawPocketItems(_items);
                 break;
             }
             //show unread
@@ -230,14 +240,33 @@ int EventHandler::pointerHandler(const int type, const int par1, const int par2)
                 {
                     case 1:
                         {
-                            _pocket->getText(_pocketView->getCurrentEntry());
-                            OpenBook(_pocketView->getCurrentEntry()->path.c_str(),"",0);
-                            break;
+                            try{
+                                if(_pocketView->getCurrentEntry()->downloaded == IsDownloaded::NOTDOWNLOADED)
+                                {
+                                    _pocket->getText(_pocketView->getCurrentEntry());
+                                    _sqliteCon.updateDownloadStatusPocketItem(_pocketView->getCurrentEntry()->id, IsDownloaded::DOWNLOADED);
+                                    _pocketView->getCurrentEntry()->downloaded = IsDownloaded::DOWNLOADED;
+                                    _pocketView->reDrawCurrentEntry();
+                                }
+                                else
+                                    _pocketView->invertCurrentEntryColor();
+
+                                OpenBook(_pocketView->getCurrentEntry()->path.c_str(),"",0);
+                                break;
+                            }
+                            catch (const std::exception &e)
+                            {
+
+                                Log::writeErrorLog(e.what());
+                                Message(ICON_INFORMATION, "Error",e.what(), 1000);
+                            }
                         }
                     default:
-                        break;
+                        {
+                            _pocketView->invertCurrentEntryColor();
+                            break;
+                        }
                 }
-                _pocketView->invertCurrentEntryColor();
 
             }
             return 1;
@@ -281,7 +310,6 @@ bool EventHandler::drawPocketItems(const vector<PocketItem> &pocketItems)
 {
     if (pocketItems.size() > 0)
     {
-        //_sqliteCon.insertMfEntries(mfEntries);
         _pocketView.reset(new PocketView(_menu.getContentRect(),pocketItems,1));
         _pocketView->draw();
         _currentView = Views::PKVIEW;

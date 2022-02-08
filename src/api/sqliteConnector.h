@@ -26,11 +26,13 @@ public:
 
     std::vector<PocketItem> selectPocketEntries();
 
-		std::vector<PocketItem> selectPocketEntries(IsDownloaded downloaded);
+    std::vector<PocketItem> selectPocketEntries(IsDownloaded downloaded);
 
-    bool updatePocketItem(int entryID, bool starred);
+    bool updatePocketItem(const std::string &entryID, bool starred);
 
-    bool updateDownloadStatusPocketItem(int entryID, IsDownloaded downloaded);
+    bool updateStatusPocketItem(const std::string &entryID, IStatus status);
+
+    bool updateDownloadStatusPocketItem(const std::string &entryID, IsDownloaded downloaded);
 
     bool insertPocketEntries(const std::vector<PocketItem> &entries);
 
