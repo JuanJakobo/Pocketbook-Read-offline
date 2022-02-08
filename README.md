@@ -7,8 +7,8 @@ A basic client to access an pocket instance via a Pocketbook ebook-reader.
 
 * Show Pocket articles the user has stored
 * Modify items
-* Download articles to read them offline TODO
-* Show unread and starred items TODO
+* Download articles to read them offline
+* Show unread and starred items
 * Open content in Pocketbook reader
 * Handle everything by touch or keys
 
