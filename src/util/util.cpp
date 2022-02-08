@@ -129,15 +129,18 @@ string Util::getData(const string &url)
     return {};
 }
 
-string Util::createHtml(string title, string content)
+string Util::clearString(string title)
 {
-    //just the body is replaced!
-//< html > < head >< / head > <body > CONTENT_HERE < / body > < / html >
-//It's unstyled, it's up to you to supply a stylesheet to make it look how you want.  You'd probably also want to create your own header that displays the title, bylines, etc.
     const std::string forbiddenInFiles = "<>\\/:?\"|";
-
     std::transform(title.begin(), title.end(), title.begin(), [&forbiddenInFiles](char c)
             { return forbiddenInFiles.find(c) != std::string::npos ? ' ' : c; });
+    return title;
+}
+
+string Util::createHtml(string title, string content)
+{
+
+    title = clearString(title);
 
     string path = ARTICLE_FOLDER + "/" + title + ".html";
     if (iv_access(path.c_str(), W_OK) != 0)

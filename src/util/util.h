@@ -55,6 +55,7 @@ public:
 
     static std::string getData(const std::string &url);
 
+    static std::string clearString(std::string title);
 
     static std::string createHtml(std::string title, std::string content);
 
