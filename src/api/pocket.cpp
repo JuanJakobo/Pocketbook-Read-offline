@@ -78,49 +78,24 @@ string Pocket::getAccessToken(const string &code){
     //save authorize code
 }
 
-//show unread, show archived, show favorited
-//TODO state unread, archive or all
-//favorite 0 unfavorited, 1 favorited
-//test basic vs complete
-//only get article?
-vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
+vector<PocketItem> Pocket::getItems()
 {
-    //
-    //always since and the rest store in sqlite --> all since can be udpates since have been modified
-    //what happens if a article is deleted?
-    //get favorite
-    //get state unread (default) get archive
-    //
-    //
-    string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + _accessToken  + "\", \"count\":\"10\",\"detailType\":\"complete\",";
-    postData += "\"state\":";
-    if(unread && archive)
-        postData += "\"all\"";
-    else if(!unread && archive)
-        postData += "\"archive\"";
-    else if(unread && !archive)
-        postData += "\"unread\"";
-
-    if(favorited)
-        postData += ",\"favorite\":\"1\"";
-
-    postData += "}";
+    string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + _accessToken  + "\",\"detailType\":\"simple\",\"contentType\":\"article\",\"state\":\"all\"";
+    auto lastUpdate = Util::accessConfig(Action::IReadString,"lastUpdate");
+    if(!lastUpdate.empty())
+            postData += ",\"since\":" + lastUpdate;
+    postData += '}';
 
     nlohmann::json j = post("get",postData);
-    //use since
-    //favorite 1 for favorite
-    //contentType? -> articles?
-    //get here also the images!
+
+    if(j["since"].is_number())
+    {
+        int since =j["since"];
+        Util::accessConfig(Action::IWriteString,"lastUpdate",std::to_string(since));
+    }
 
     vector<PocketItem> tempItems;
-
-    int since = j["since"];
-
     for (const auto &element : j["list"].items()){
-
-//if has_video is 2 --> is a video
-//is_article is 1 --> is article
-
         PocketItem temp;
         //also needs to get the rest
         if(!element.value()["is_article"].is_null()){

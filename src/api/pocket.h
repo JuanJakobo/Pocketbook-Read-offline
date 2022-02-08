@@ -42,8 +42,7 @@ class Pocket
          *
          * @return vetor of PocketItems that has been received
          */
-        std::vector<PocketItem> getItems(bool unread, bool archive, bool favorited);
-
+        std::vector<PocketItem> getItems();
 
         /**
         *

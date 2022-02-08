@@ -31,7 +31,6 @@ enum Views
     PKVIEW
 };
 
-//TODO upgrade 
 const std::string CONFIG_FOLDER = "/mnt/ext1/system/config/readoffline";
 const std::string CONFIG_PATH = CONFIG_FOLDER + "/readoffline.cfg";
 const std::string ARTICLE_FOLDER = "/mnt/ext1/readoffline";
@@ -129,7 +128,7 @@ private:
      * Draws the pocket items to an ListView
      * 
      */
-    void filterAndDrawPocket(const std::string &filter);
+    void filterAndDrawPocket(IStatus status, bool favorited);
 
 };
 #endif

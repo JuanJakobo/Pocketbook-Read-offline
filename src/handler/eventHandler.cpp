@@ -299,34 +299,47 @@ bool EventHandler::drawPocketItems(const vector<PocketItem> &pocketItems)
 
 }
 
-void EventHandler::filterAndDrawPocket(const string &filter)
+void EventHandler::filterAndDrawPocket(IStatus status, bool favorited)
 {
-    if (!filter.empty())
-    {
-        try{
-            if(!Util::connectToNetwork())
-                return;
-            /*
-            vector<PocketItem> mfEntries = _pocket->getEntries(filter);
-            vector<PocketItem> oldEntries = _sqliteCon.selectMfEntries();
-            for(size_t i = 0; i < mfEntries.size(); i++)
+    try{
+        _items.clear();
+        vector<PocketItem> newEntries = _pocket->getItems();
+        _sqliteCon.insertPocketEntries(newEntries);
+        vector<PocketItem> oldEntries = _sqliteCon.selectPocketEntries();
+        for(size_t i = 0; i < newEntries.size(); i++)
+        {
+            for(size_t j = 0; j < oldEntries.size();j++)
             {
-                for(size_t j = 0; j < oldEntries.size();j++)
+                if(newEntries.at(i).id == oldEntries.at(j).id)
                 {
-                    if(mfEntries.at(i).id == oldEntries.at(j).id)
-                    {
-                        mfEntries.at(i).downloaded = oldEntries.at(j).downloaded;
-                        break;
-                    }
+                    if(newEntries.at(i).starred != oldEntries.at(j).starred)
+                        _sqliteCon.updatePocketItem(oldEntries.at(j).id, newEntries.at(i).starred);
+                    if(newEntries.at(i).status != oldEntries.at(j).status)
+                        _sqliteCon.updateStatusPocketItem(oldEntries.at(j).id, newEntries.at(i).status);
+                    break;
                 }
             }
-            drawPocketEntries(mfEntries);
-            */
         }
-        catch (const std::exception &e)
+
+        //TODO filter in DB favorited and status are there, both needed?
+        oldEntries = _sqliteCon.selectPocketEntries();
+        for(size_t j = 0; j < oldEntries.size();j++)
         {
-            //TODO use errro message 
-            Message(ICON_INFORMATION, "Error","An error occured", 1000);
+            if(favorited){
+                if(oldEntries.at(j).starred == favorited)
+                    _items.push_back(oldEntries.at(j));
+            }else{
+                if(oldEntries.at(j).status == status)
+                    _items.push_back(oldEntries.at(j));
+            }
         }
+
+        drawPocketItems(_items);
+    }
+    catch (const std::exception &e)
+    {
+
+        Log::writeErrorLog(e.what());
+        Message(ICON_INFORMATION, "Error",e.what(), 1000);
     }
 }
