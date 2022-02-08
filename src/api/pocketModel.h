@@ -3,7 +3,7 @@
 //
 // Author:           JuanJakobo
 // Date:             23.04.2021
-// Description:      
+// Description:      Describes the structure of an pocket item
 //-------------------------------------------------------------------
 
 #ifndef POCKETMODEL
@@ -23,7 +23,6 @@ enum IStatus
 enum IsDownloaded
 {
 				NOTDOWNLOADED,
-				TOBEDOWNLOADED,
 				DOWNLOADED
 };
 
