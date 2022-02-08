@@ -95,25 +95,21 @@ void EventHandler::mainMenuHandler(const int index)
                 filterAndDrawPocket(IStatus::UNREAD,true);
                 break;
             }
-            //sync items
+            //Mark as read till page
         case 104:
             {
-                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
+                _pocket->sendItems(PocketAction::ARCHIVE, _pocketView->getEntriesTillPage());
+                _items = _sqliteCon.selectPocketEntries(IsDownloaded::DOWNLOADED);
+                drawPocketItems(_items);
                 break;
             }
-            //Mark as read till page
         case 105:
-            {
-                _pocket->sendItems("archive", _items);
-                break;
-            }
-        case 107:
             {
                 Message(ICON_INFORMATION, "Info", "Info", 1200);
                 break;
             }
             //Exit
-        case 108:
+        case 106:
             CloseApp();
             break;
         default:
