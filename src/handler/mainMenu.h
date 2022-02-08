@@ -17,8 +17,8 @@ class MainMenu
 {
 public:
     /**
-        * Defines fonds, sets global Event Handler and starts new content 
-        * 
+        * Defines fonds, sets global Event Handler and starts new content
+        *
         * @param name name of the application
         */
     MainMenu(const std::string &name);
@@ -30,7 +30,7 @@ public:
 
     /**
         * Shows the menu on the screen, lets the user choose menu options and then redirects the handler to the caller
-        * 
+        *
         * @param mainView if true mainView will be shown
         * @return int returns if the event was handled
         */
@@ -49,7 +49,6 @@ private:
     irect _contentRect;
 
     char *_menu = strdup("Menu");
-    char *_syncDownloaded = strdup("Sync marked");
     char *_showUnread = strdup("Show unread");
     char *_showStarred = strdup("Show starred");
     char *_showDownloaded = strdup("Show downloaded");
