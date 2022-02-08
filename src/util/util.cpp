@@ -31,30 +31,29 @@ size_t Util::writeData(void *ptr, size_t size, size_t nmemb, FILE *stream)
 }
 
 //https://github.com/pmartin/pocketbook-demo/blob/master/devutils/wifi.cpp
-bool Util::connectToNetwork()
+void Util::connectToNetwork()
 {
     //NetError, NetErrorMessage
     iv_netinfo *netinfo = NetInfo();
     if (netinfo->connected){
         ShowHourglassForce();
-        return true;
+        return;
     }
 
     const char *network_name = nullptr;
     int result = NetConnect2(network_name, 1);
     if (result != 0)
     {
-						Message(ICON_ERROR, "Network Error","Could not connect to the internet.", 5000);
-						return false;
+        throw std::runtime_error("Could not connect to the internet.");
     }
 
     netinfo = NetInfo();
     if (netinfo->connected){
-				ShowHourglassForce();
-        return true;
+        ShowHourglassForce();
+        return;
     }
-		Message(ICON_ERROR, "Network Error","Could not connect to the internet.", 5000);
-		return false;
+
+    throw std::runtime_error("Could not connect to the internet.");
 }
 
 string Util::accessConfig(const Action &action, const string &name, const string &value)
@@ -91,15 +90,14 @@ string Util::accessConfig(const Action &action, const string &name, const string
 
 string Util::getData(const string &url)
 {
+    Util::connectToNetwork();
+
     string readBuffer;
     CURLcode res;
     CURL *curl = curl_easy_init();
 
-    Util::connectToNetwork();
-
     if (curl)
     {
-
         struct curl_slist *headers = NULL;
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
@@ -124,7 +122,6 @@ string Util::getData(const string &url)
         }
         else
         {
-            //CATCH
             Log::writeErrorLog(std::to_string(res) + url);
             throw std::runtime_error("Curl RES Error Code " + std::to_string(res));
         }

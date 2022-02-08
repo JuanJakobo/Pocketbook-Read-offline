@@ -202,9 +202,7 @@ void Pocket::sendItems(string action, const vector<PocketItem> &items)
 
 nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
 {
-    if(!Util::connectToNetwork())
-        Log::writeInfoLog("no internet");
-    //TODO leave!
+    Util::connectToNetwork();
 
     string url = POCKET_URL + apiEndpoint;
 

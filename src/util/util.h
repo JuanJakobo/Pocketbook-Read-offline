@@ -40,7 +40,7 @@ public:
     * Checks if a network connection can be established
     *
     */
-    static bool connectToNetwork();
+    static void connectToNetwork();
 
     /**
     * Reads an string from the config file
