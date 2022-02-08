@@ -131,24 +131,15 @@ vector<PocketItem> Pocket::getItems(bool unread, bool archive, bool favorited)
                 }
                 if(element.value()["resolved_title"].is_string())
                     temp.title = element.value()["resolved_title"];
-                if(element.value()["given_url"].is_string())
-                    temp.url = element.value()["given_url"];
-                if(!element.value()["favorite"].is_null())
-                {
-                    if(element.value()["favorite"] == "0")
-                        temp.starred = false;
-                    else
-                        temp.starred = true;
-                }
-                if(!element.value()["status"].is_null())
-                {
-                    if(element.value()["status"] == "1")
-                        temp.status = "archived";
-                    else if(element.value()["status"] == "2")
-                        temp.status = "shall be deleted";
-                    else
-                        temp.status = "unread";
-                }
+        if(!element.value()["status"].is_null())
+        {
+            if(element.value()["status"] == "0")
+                temp.status = IStatus::UNREAD;
+            else if(element.value()["status"] == "1")
+                temp.status = IStatus::ARCHIVED;
+            else if(element.value()["status"] == "2")
+                temp.status = IStatus::TODELETE;
+        }
                 //TODO modify!
                 if(element.value()["excerpt"].is_string())
                     temp.excerpt = element.value()["excerpt"];

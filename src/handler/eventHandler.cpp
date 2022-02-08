@@ -86,15 +86,13 @@ void EventHandler::mainMenuHandler(const int index)
             //show unread
         case 102:
             {
-                _items = _pocket->getItems(true,false,false);
-                drawPocketItems(_items);
+                filterAndDrawPocket(IStatus::UNREAD,false);
                 break;
             }
             //show starred
         case 103:
             {
-                _items = _pocket->getItems(true,true,true);
-                drawPocketItems(_items);
+                filterAndDrawPocket(IStatus::UNREAD,true);
                 break;
             }
             //sync items

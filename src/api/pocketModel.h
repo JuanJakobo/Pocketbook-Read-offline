@@ -13,6 +13,13 @@
 
 #include <string>
 
+enum IStatus
+{
+    UNREAD,
+    ARCHIVED,
+    TODELETE
+};
+
 enum IsDownloaded
 {
 				NOTDOWNLOADED,
@@ -23,7 +30,7 @@ enum IsDownloaded
 struct PocketItem : Entry
 {
     std::string title;
-    std::string status;
+    IStatus  status;
     std::string url;
     std::string excerpt;
     std::string path;
