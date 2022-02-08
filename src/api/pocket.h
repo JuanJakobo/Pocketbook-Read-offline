@@ -16,12 +16,12 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-enum pocketActions {
+enum PocketAction {
     ADD, //Add a new item
     ARCHIVE, //Move an item to the archive
-    READD, //Unarchive an item 
+    READD, //Unarchive an item
     FAVORITE, //Mark an item as favorite
-    UNVFAVORITE, //unfavorite an item
+    UNFAVORITE, //unfavorite an item
     DELETE //permanently remove an item
 };
 
@@ -33,7 +33,7 @@ class Pocket
     public:
         /**
          * creatas a new Miniflux object containing the url and token to access the api
-         *  
+         * 
          */
         Pocket();
 
@@ -56,10 +56,16 @@ class Pocket
         /**
          *
          * Modify a Users Pocket Data
-         *
          * @param
          */
-        void sendItems(std::string action, const std::vector<PocketItem> &items);
+        void sendItems(PocketAction action, const std::vector<std::string> &ids);
+
+        /**
+         *
+         * Modify a Users Pocket Data
+         * @param
+         */
+        void sendItem(PocketAction action, const std::string &id);
 
 
     private:
@@ -68,6 +74,7 @@ class Pocket
         void loginDialog();
         std::string getCode();
         std::string getAccessToken(const std::string &code);
+        std::string determineAction(PocketAction action);
         nlohmann::json post(const std::string &apiEndpoint, const std::string &data);
 
 };

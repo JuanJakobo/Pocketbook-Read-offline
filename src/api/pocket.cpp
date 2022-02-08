@@ -164,31 +164,58 @@ void Pocket::getText(PocketItem *item)
     
 }
 
-void Pocket::sendItems(string action, const vector<PocketItem> &items)
+string Pocket::determineAction(PocketAction action)
+{
+    string stAction;
+    switch(action)
+    {
+        case ADD:
+            stAction = "add";
+            break;
+        case ARCHIVE:
+            stAction = "archive";
+            break;
+        case READD:
+            stAction = "readd";
+            break;
+        case FAVORITE:
+            stAction = "favorite";
+            break;
+        case UNFAVORITE:
+            stAction = "unfavorite";
+            break;
+        case DELETE:
+            stAction = "delete";
+            break;
+    }
+    return stAction;
+}
+
+void Pocket::sendItem(PocketAction action, const string &id)
+{
+    //TODO test status
+    //response does not help here as it is always the same
+    std::string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\",\"access_token\":\"" + _accessToken  + "\",\"actions\":[";
+    postData += "{\"action\":\"" + determineAction(action) + "\",\"item_id\":\"" + id + "\"}]}";
+    nlohmann::json j = post("send",postData);
+}
+
+void Pocket::sendItems(PocketAction action, const vector<string> &ids)
 {
 
     std::string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\",\"access_token\":\"" + _accessToken  + "\",\"actions\":[";
-
+    string stAction =  determineAction(action);
     auto comma = false;
-    for(auto item : items)
+    for(auto id : ids)
     {
         if(comma)
             postData += ',';
-        postData += "{\"action\":\"" + action + "\",\"item_id\":\"" + item.id + "\"}";
+        postData += "{\"action\":\"" + stAction + "\",\"item_id\":\"" + id + "\"}";
         if(!comma)
             comma = true;
     }
     postData += "]}";
     nlohmann::json j = post("send",postData);
-
-
-    //https://getpocket.com/v3/send
-    //consumer_key
-    //access_token
-    //actions
-    //archive and readd --> unread / read
-    //favorite unfavorite --> star /unstar
-    //delete --> deletes it complety
 }
 
 nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
