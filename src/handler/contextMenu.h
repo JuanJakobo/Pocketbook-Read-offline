@@ -10,6 +10,7 @@
 #define CONTEXT_MENU
 
 #include "inkview.h"
+#include "pocketModel.h"
 
 #include <string>
 
@@ -29,12 +30,13 @@ public:
         * @param starred hide option if is already starred
         * @return int returns if the event was handled
         */
-    int createMenu(int y, const iv_menuhandler &handler, bool starred, const std::string &downloaded);
+    int createMenu(int y, const iv_menuhandler &handler, const PocketItem &item);
 
 
 private:
     char *_menu = strdup("Menu");
     char *_star;
+    char *_archive;
     char *_download;
 };
 #endif

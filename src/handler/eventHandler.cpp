@@ -124,27 +124,75 @@ void EventHandler::contextMenuHandlerStatic(const int index)
 
 void EventHandler::contextMenuHandler(const int index)
 {
-    switch (index)
-    {
+    try{
+
+        switch (index)
+        {
             //Mark/Unmark to download
-        case 102:
-            {
-                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
-                break;
-            }
-            //Unstar/Star
-        case 103:
-            {
-                Message(ICON_INFORMATION, "Error","not implemented yet", 1000);
-                //TODO check if starred/unstarred
-                //_pocket->sendItems("favorite", _items);
-                break;
-            }
-        default:
-            {
-                _pocketView->invertCurrentEntryColor();
-                break;
-            }
+            case 101:
+                {
+                    if(_pocketView->getCurrentEntry()->downloaded != IsDownloaded::DOWNLOADED)
+                    {
+                        _pocket->getText(_pocketView->getCurrentEntry());
+                        _pocketView->getCurrentEntry()->downloaded = IsDownloaded::DOWNLOADED;
+                    }
+                    else
+                    {
+                        remove(_pocketView->getCurrentEntry()->path.c_str());
+                        string title = _pocketView->getCurrentEntry()->title;
+                        string cmd = "rm -rf \"" + ARTICLE_FOLDER + "/img/" + title + "/\"";
+                        system(cmd.c_str());
+                        _pocketView->getCurrentEntry()->downloaded = IsDownloaded::NOTDOWNLOADED;
+                    }
+                    _sqliteCon.updateDownloadStatusPocketItem(_pocketView->getCurrentEntry()->id, _pocketView->getCurrentEntry()->downloaded);
+                    _pocketView->reDrawCurrentEntry();
+                    HideHourglass();
+                    break;
+                }
+                //Archive/readd
+            case 102:
+                {
+                    if(_pocketView->getCurrentEntry()->status == IStatus::UNREAD)
+                    {
+                        _pocket->sendItem(PocketAction::ARCHIVE, _pocketView->getCurrentEntry()->id);
+                        _pocketView->getCurrentEntry()->status = IStatus::ARCHIVED;
+                    }
+                    else if(_pocketView->getCurrentEntry()->status == IStatus::ARCHIVED)
+                    {
+                        _pocket->sendItem(PocketAction::READD, _pocketView->getCurrentEntry()->id);
+                        _pocketView->getCurrentEntry()->status = IStatus::UNREAD;
+                    }
+                    _sqliteCon.updateStatusPocketItem(_pocketView->getCurrentEntry()->id,_pocketView->getCurrentEntry()->status);
+                    _pocketView->reDrawCurrentEntry();
+                    HideHourglass();
+                    break;
+
+                }
+                //Unstar/Star
+            case 103:
+                {
+                    if(_pocketView->getCurrentEntry()->starred)
+                    {
+                        _pocket->sendItem(PocketAction::UNFAVORITE, _pocketView->getCurrentEntry()->id);
+                    }
+                    else
+                    {
+                        _pocket->sendItem(PocketAction::FAVORITE, _pocketView->getCurrentEntry()->id);
+                    }
+                    _pocketView->getCurrentEntry()->starred = !_pocketView->getCurrentEntry()->starred;
+                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, _pocketView->getCurrentEntry()->starred);
+                    _pocketView->reDrawCurrentEntry();
+                    HideHourglass();
+                    break;
+                }
+        }
+    }
+    catch (const std::exception &e)
+    {
+
+        _pocketView->invertCurrentEntryColor();
+        Log::writeErrorLog(e.what());
+        Message(ICON_INFORMATION, "Error",e.what(), 1000);
     }
 }
 
@@ -157,15 +205,7 @@ int EventHandler::pointerHandler(const int type, const int par1, const int par2)
             if (_pocketView->checkIfEntryClicked(par1, par2))
                 _pocketView->invertCurrentEntryColor();
 
-            string downloaded;
-            if(_pocketView->getCurrentEntry()->downloaded == IsDownloaded::TOBEDOWNLOADED) 
-                downloaded = "Remove download mark";
-            else if(_pocketView->getCurrentEntry()->downloaded == IsDownloaded::NOTDOWNLOADED)
-                downloaded = "Add download mark";
-            else if(_pocketView->getCurrentEntry()->downloaded == IsDownloaded::DOWNLOADED)
-                downloaded = "Remove item";
-
-            _contextMenu.createMenu(par2, EventHandler::contextMenuHandlerStatic,_pocketView->getCurrentEntry()->starred , downloaded);
+            _contextMenu.createMenu(par2, EventHandler::contextMenuHandlerStatic,*_pocketView->getCurrentEntry());
             return 1;
         }
     }
