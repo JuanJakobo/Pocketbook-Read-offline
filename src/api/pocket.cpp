@@ -229,11 +229,15 @@ nlohmann::json Pocket::post(const string &apiEndpoint, const string &data)
             {
             case 200:
                 return nlohmann::json::parse(readBuffer);
-
-           //TODO get http status and x-error-code 
-           //handle invalid access token !
+            case 400:
+                throw std::runtime_error("Invalid request, please make sure you follow the documentation for proper syntax");
+            case 401:
+                throw std::runtime_error("Problem authenticating the user");
+            case 403:
+                throw std::runtime_error("User was authenticated, but access denied due to lack of permission or rate limiting.");
+            case 503:
+                throw std::runtime_error("Pocket's sync server is down for scheduled maintenance.");
             default:
-                //TODO catch
                 throw std::runtime_error("HTML Error Code" + std::to_string(response_code));
             }
         }
