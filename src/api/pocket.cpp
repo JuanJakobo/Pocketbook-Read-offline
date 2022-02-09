@@ -32,22 +32,12 @@ Pocket::Pocket()
 void Pocket::loginDialog(){
     try{
         auto code = getCode();
-        auto dialogResult = DialogSynchro(ICON_QUESTION, "Action",("Please type the URL below into your browser to grant this application access to Pocket. (It is normal that the page fails to load) \n https://getpocket.com/auth/authorize?request_token=" + code).c_str(), "Done", "Cancel", NULL);
+        auto dialogResult = DialogSynchro(ICON_QUESTION, "Action",("Please type the URL below into your browser to grant this application access to Pocket. After you accepted please click done.(It is normal that, once you accepted, the page fails to load) \n https://getpocket.com/auth/authorize?request_token=" + code).c_str(), "Done", "Cancel", NULL);
         switch (dialogResult)
         {
             case 1:
                 {
-                    try{
-                        _accessToken =  getAccessToken(code);
-                        Util::accessConfig(Action::IWriteSecret,"AccessToken",_accessToken);
-                    }
-                    catch (const std::exception &e)
-                    {
-                        Log::writeErrorLog(e.what());
-                        Message(ICON_INFORMATION, "Error while downloading", e.what(), 1200);
-                        loginDialog();
-                    }
-
+                    getAccessToken(code);
                     break;
                 }
             default:
@@ -58,24 +48,30 @@ void Pocket::loginDialog(){
     catch (const std::exception &e)
     {
         Log::writeErrorLog(e.what());
-        Message(ICON_INFORMATION, "Error while downloading", e.what(), 1200);
+        Message(ICON_INFORMATION, "Error while logging in.", e.what(), 1200);
+        loginDialog();
     }
 }
 
 string Pocket::getCode(){
     nlohmann::json j = post("oauth/request","{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"redirect_uri\":\"github.com\"}");
-    if (j["code"].is_string())
-        return j["code"];
-    return "error";
+    if (!j["code"].is_string())
+        throw std::runtime_error("could not receive code.");
+    return j["code"];
 }
 
-string Pocket::getAccessToken(const string &code){
+void Pocket::getAccessToken(const string &code){
     nlohmann::json j = post("oauth/authorize","{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"code\":\"" + code  + "\"}");
-    if (j["access_token"].is_string())
-        return j["access_token"];
-    //TODO get also user
-    return "error";
-    //save authorize code
+    if (j["username"].is_string())
+        Util::accessConfig(Action::IWriteSecret,"Username",j["username"]);
+    if (j["access_token"].is_string()){
+        _accessToken =  j["access_token"];
+        Util::accessConfig(Action::IWriteSecret,"AccessToken",_accessToken);
+    }
+    else
+    {
+        throw std::runtime_error("could not receive authentifcation token.");
+    }
 }
 
 vector<PocketItem> Pocket::getItems()
