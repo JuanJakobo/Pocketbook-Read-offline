@@ -16,6 +16,13 @@
 #include <string>
 #include <vector>
 
+enum UpdateAction
+{
+    IDOWNLOADED,
+    ISTATUS,
+    ISTARRED
+};
+
 class SqliteConnector
 {
 public:
@@ -24,16 +31,33 @@ public:
     */
     SqliteConnector(const std::string &DBpath);
 
-    std::vector<PocketItem> selectPocketEntries();
+    /**
+     * Selectes the pocket entries
+     *
+     * @return vector of PocketItems that has been received
+     *
+     * @param IsDownloaded the downloaded status of the pocket items
+     */
+    std::vector<PocketItem> selectPocketEntries(IsDownloaded download = IsDownloaded::INVALID);
 
-    std::vector<PocketItem> selectPocketEntries(IsDownloaded downloaded);
+    /**
+     * Update pocket items in DB
+     *
+     * @param the entryID that shall be updates
+     * @param toUpdate that shall be updated
+     * @param value the value that shall be written
+     *
+     * @return true if updates was succesfull
+     */
+    bool updatePocketItem(const std::string &entryID, int toUpdate, int value);
 
-    bool updatePocketItem(const std::string &entryID, bool starred);
-
-    bool updateStatusPocketItem(const std::string &entryID, IStatus status);
-
-    bool updateDownloadStatusPocketItem(const std::string &entryID, IsDownloaded downloaded);
-
+    /**
+     * Insert new pocketEntries to the DB
+     *
+     * @param entries that shall be inserted
+     *
+     * @return true if updates was succesfull
+     */
     bool insertPocketEntries(const std::vector<PocketItem> &entries);
 
 private:

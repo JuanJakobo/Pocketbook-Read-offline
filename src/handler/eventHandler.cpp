@@ -54,7 +54,7 @@ EventHandler::EventHandler()
         if (iv_access(_items.at(i).path.c_str(), W_OK) != 0)
         {
             _items.at(i).downloaded =  IsDownloaded::NOTDOWNLOADED;
-            _sqliteCon.updateDownloadStatusPocketItem(_items.at(i).id, IsDownloaded::NOTDOWNLOADED);
+            _sqliteCon.updatePocketItem(_items.at(i).id,UpdateAction::IDOWNLOADED, IsDownloaded::NOTDOWNLOADED);
             break;
         }
     }
@@ -154,7 +154,7 @@ void EventHandler::contextMenuHandler(const int index)
                         system(cmd.c_str());
                         _pocketView->getCurrentEntry()->downloaded = IsDownloaded::NOTDOWNLOADED;
                     }
-                    _sqliteCon.updateDownloadStatusPocketItem(_pocketView->getCurrentEntry()->id, _pocketView->getCurrentEntry()->downloaded);
+                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, UpdateAction::IDOWNLOADED, _pocketView->getCurrentEntry()->downloaded);
                     _pocketView->reDrawCurrentEntry();
                     HideHourglass();
                     break;
@@ -172,7 +172,7 @@ void EventHandler::contextMenuHandler(const int index)
                         _pocket->sendItem(PocketAction::READD, _pocketView->getCurrentEntry()->id);
                         _pocketView->getCurrentEntry()->status = IStatus::UNREAD;
                     }
-                    _sqliteCon.updateStatusPocketItem(_pocketView->getCurrentEntry()->id,_pocketView->getCurrentEntry()->status);
+                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, UpdateAction::ISTATUS, _pocketView->getCurrentEntry()->status);
                     _pocketView->reDrawCurrentEntry();
                     HideHourglass();
                     break;
@@ -190,7 +190,7 @@ void EventHandler::contextMenuHandler(const int index)
                         _pocket->sendItem(PocketAction::FAVORITE, _pocketView->getCurrentEntry()->id);
                     }
                     _pocketView->getCurrentEntry()->starred = !_pocketView->getCurrentEntry()->starred;
-                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, _pocketView->getCurrentEntry()->starred);
+                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, UpdateAction::ISTARRED, _pocketView->getCurrentEntry()->starred);
                     _pocketView->reDrawCurrentEntry();
                     HideHourglass();
                     break;
@@ -244,7 +244,7 @@ int EventHandler::pointerHandler(const int type, const int par1, const int par2)
                                 if(_pocketView->getCurrentEntry()->downloaded == IsDownloaded::NOTDOWNLOADED)
                                 {
                                     _pocket->getText(_pocketView->getCurrentEntry());
-                                    _sqliteCon.updateDownloadStatusPocketItem(_pocketView->getCurrentEntry()->id, IsDownloaded::DOWNLOADED);
+                                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, UpdateAction::IDOWNLOADED, IsDownloaded::DOWNLOADED);
                                     _pocketView->getCurrentEntry()->downloaded = IsDownloaded::DOWNLOADED;
                                     _pocketView->reDrawCurrentEntry();
                                 }
@@ -340,16 +340,16 @@ void EventHandler::filterAndDrawPocket(IStatus status, bool favorited)
             {
                 if(newEntries.at(i).id == oldEntries.at(j).id)
                 {
+                    //TODO filter in DB favorited and status are there, both needed?
                     if(newEntries.at(i).starred != oldEntries.at(j).starred)
-                        _sqliteCon.updatePocketItem(oldEntries.at(j).id, newEntries.at(i).starred);
+                        _sqliteCon.updatePocketItem(oldEntries.at(j).id, UpdateAction::ISTARRED, newEntries.at(i).starred);
                     if(newEntries.at(i).status != oldEntries.at(j).status)
-                        _sqliteCon.updateStatusPocketItem(oldEntries.at(j).id, newEntries.at(i).status);
+                        _sqliteCon.updatePocketItem(oldEntries.at(j).id, UpdateAction::ISTATUS, newEntries.at(i).status);
                     break;
                 }
             }
         }
 
-        //TODO filter in DB favorited and status are there, both needed?
         oldEntries = _sqliteCon.selectPocketEntries();
         for(size_t j = 0; j < oldEntries.size();j++)
         {

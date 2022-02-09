@@ -3,7 +3,6 @@
 //
 // Author:           JuanJakobo
 // Date:             18.07.2021
-// Description:
 //
 //-------------------------------------------------------------------
 
@@ -22,39 +21,6 @@ SqliteConnector::SqliteConnector(const string &DBpath) : _dbpath(DBpath)
 {
 }
 
-vector<PocketItem> SqliteConnector::selectPocketEntries()
-{
-    open();
-    int rs;
-    sqlite3_stmt *stmt = 0;
-    vector<PocketItem> entries;
-
-    rs = sqlite3_prepare_v2(_db, "SELECT id, status, title, url, excerpt, path, reading_time, starred, downloaded FROM 'PocketItems';", -1, &stmt, 0);
-
-    auto test = sqlite3_column_count(stmt);
-
-    while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-						PocketItem temp;
-
-						temp.id = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
-						temp.status =  static_cast<IStatus>(sqlite3_column_int(stmt,1));
-						temp.title = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
-						temp.url =reinterpret_cast<const char *>(sqlite3_column_text(stmt, 3));
-						temp.excerpt =  reinterpret_cast<const char *>(sqlite3_column_text(stmt, 4));
-						temp.path =  reinterpret_cast<const char *>(sqlite3_column_text(stmt, 5));
-						temp.reading_time = sqlite3_column_int(stmt, 6);
-						temp.starred = (sqlite3_column_int(stmt, 7) == 1) ? true : false;
-						temp.downloaded =  static_cast<IsDownloaded>(sqlite3_column_int(stmt,8));
-						entries.push_back(temp);
-
-    }
-
-    sqlite3_finalize(stmt);
-    sqlite3_close(_db);
-    return entries;
-}
-
 vector<PocketItem> SqliteConnector::selectPocketEntries(IsDownloaded downloaded)
 {
     open();
@@ -62,9 +28,15 @@ vector<PocketItem> SqliteConnector::selectPocketEntries(IsDownloaded downloaded)
     sqlite3_stmt *stmt = 0;
     vector<PocketItem> entries;
 
-    rs = sqlite3_prepare_v2(_db, "SELECT id, status, title, url, excerpt, path, reading_time, starred, downloaded FROM 'PocketItems' WHERE downloaded = ?;", -1, &stmt, 0);
-
-    rs = sqlite3_bind_int(stmt, 1, downloaded);
+    if(downloaded == IsDownloaded::INVALID)
+    {
+        rs = sqlite3_prepare_v2(_db, "SELECT id, status, title, url, excerpt, path, reading_time, starred, downloaded FROM 'PocketItems';", -1, &stmt, 0);
+    }
+    else
+    {
+        rs = sqlite3_prepare_v2(_db, "SELECT id, status, title, url, excerpt, path, reading_time, starred, downloaded FROM 'PocketItems' WHERE downloaded = ?;", -1, &stmt, 0);
+        rs = sqlite3_bind_int(stmt, 1, downloaded);
+    }
 
     auto test = sqlite3_column_count(stmt);
 
@@ -83,76 +55,46 @@ vector<PocketItem> SqliteConnector::selectPocketEntries(IsDownloaded downloaded)
 						temp.downloaded =  static_cast<IsDownloaded>(sqlite3_column_int(stmt,8));
 						entries.push_back(temp);
     }
-
     sqlite3_finalize(stmt);
     sqlite3_close(_db);
     return entries;
 }
 
-
-
-bool SqliteConnector::updateDownloadStatusPocketItem(const string &entryID, IsDownloaded downloaded)
+bool SqliteConnector::updatePocketItem(const string &entryID, int toUpdate, int value)
 {
     open();
     int rs;
     sqlite3_stmt *stmt = 0;
 
-    rs = sqlite3_prepare_v2(_db, "UPDATE 'PocketItems' SET downloaded=? WHERE id=?", -1, &stmt, 0);
-    rs = sqlite3_bind_int(stmt, 1, downloaded);
-    rs = sqlite3_bind_text(stmt,2, entryID.c_str(), entryID.length(),NULL);
-    rs = sqlite3_step(stmt);
-
-    if (rs != SQLITE_DONE)
+    switch (toUpdate)
     {
-        Log::writeErrorLog(sqlite3_errmsg(_db) + std::string(" (Error Code: ") + std::to_string(rs) + ")");
+        case UpdateAction::IDOWNLOADED:
+            {
+                rs = sqlite3_prepare_v2(_db, "UPDATE 'PocketItems' SET downloaded=? WHERE id=?", -1, &stmt, 0);
+                rs = sqlite3_bind_int(stmt, 1, value);
+                break;
+            }
+        case UpdateAction::ISTATUS:
+            {
+                rs = sqlite3_prepare_v2(_db, "UPDATE 'PocketItems' SET status=? WHERE id=?", -1, &stmt, 0);
+                rs = sqlite3_bind_int(stmt, 1, value);
+                break;
+            }
+        case UpdateAction::ISTARRED:
+            {
+                rs = sqlite3_prepare_v2(_db, "UPDATE 'PocketItems' SET starred=? WHERE id=?", -1, &stmt, 0);
+                rs = sqlite3_bind_int(stmt, 1, value);
+                break;
+            }
     }
-    rs = sqlite3_clear_bindings(stmt);
-    rs = sqlite3_reset(stmt);
 
-    sqlite3_finalize(stmt);
-    sqlite3_close(_db);
-
-    return true;
-}
-
-bool SqliteConnector::updateStatusPocketItem(const string &entryID, IStatus status)
-{
-    open();
-    int rs;
-    sqlite3_stmt *stmt = 0;
-
-    rs = sqlite3_prepare_v2(_db, "UPDATE 'PocketItems' SET status=? WHERE id=?", -1, &stmt, 0);
-    rs = sqlite3_bind_int(stmt, 1, status);
     rs = sqlite3_bind_text(stmt,2, entryID.c_str(), entryID.length(),NULL);
     rs = sqlite3_step(stmt);
 
     if (rs != SQLITE_DONE)
     {
         Log::writeErrorLog(sqlite3_errmsg(_db) + std::string(" (Error Code: ") + std::to_string(rs) + ")");
-    }
-    rs = sqlite3_clear_bindings(stmt);
-    rs = sqlite3_reset(stmt);
-
-    sqlite3_finalize(stmt);
-    sqlite3_close(_db);
-
-    return true;
-}
-
-bool SqliteConnector::updatePocketItem(const string &entryID, bool starred)
-{
-    open();
-    int rs;
-    sqlite3_stmt *stmt = 0;
-
-    rs = sqlite3_prepare_v2(_db, "UPDATE 'PocketItems' SET starred=? WHERE id=?", -1, &stmt, 0);
-    rs = sqlite3_bind_int(stmt, 1, (starred) ? 1 : 0);
-    rs = sqlite3_bind_text(stmt,2, entryID.c_str(), entryID.length(),NULL);
-    rs = sqlite3_step(stmt);
-
-    if (rs != SQLITE_DONE)
-    {
-        Log::writeErrorLog(sqlite3_errmsg(_db) + std::string(" (Error Code: ") + std::to_string(rs) + ")");
+        return false;
     }
     rs = sqlite3_clear_bindings(stmt);
     rs = sqlite3_reset(stmt);
