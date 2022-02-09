@@ -1,9 +1,9 @@
 //------------------------------------------------------------------
-// MiinifluxModel.h
+// model.h
 //
 // Author:           JuanJakobo
 // Date:             23.04.2021
-// Description:      
+// Description: global model
 //-------------------------------------------------------------------
 
 #ifndef MODEL

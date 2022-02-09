@@ -23,7 +23,8 @@ enum IStatus
 enum IsDownloaded
 {
 				NOTDOWNLOADED,
-				DOWNLOADED
+				DOWNLOADED,
+                INVALID
 };
 
 struct PocketItem : Entry

@@ -17,10 +17,10 @@ class MainMenu
 {
 public:
     /**
-        * Defines fonds, sets global Event Handler and starts new content
-        *
-        * @param name name of the application
-        */
+     * Defines fonds, sets global Event Handler and starts new content
+     *
+     * @param name name of the application
+     */
     MainMenu(const std::string &name);
 
     ~MainMenu();
@@ -29,11 +29,11 @@ public:
     irect *getMenuButtonRect() { return &_menuButtonRect; };
 
     /**
-        * Shows the menu on the screen, lets the user choose menu options and then redirects the handler to the caller
-        *
-        * @param mainView if true mainView will be shown
-        * @return int returns if the event was handled
-        */
+     * Shows the menu on the screen, lets the user choose menu options and then redirects the handler to the caller
+     *
+     * @param mainView if true mainView will be shown
+     * @return int returns if the event was handled
+     */
     int createMenu(bool mainView, const iv_menuhandler &handler);
 
 private:

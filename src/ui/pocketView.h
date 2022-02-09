@@ -20,14 +20,19 @@ class PocketView final : public ListView
 {
 public:
     /**
-        * Displays a list view
-        *
-        * @param ContentRect area of the screen where the list view is placed
-        * @param Items items that shall be shown in the listview
-        * @param page page that is shown, default is 1
-        */
+     * Displays a list view
+     *
+     * @param ContentRect area of the screen where the list view is placed
+     * @param Items items that shall be shown in the listview
+     * @param page page that is shown, default is 1
+     */
     PocketView(const irect *contentRect, const std::vector<PocketItem> &pocketItems, int page = 1);
 
+    /**
+     * Gets the current page and returns the itemIds till the page
+     *
+     * @return a vector containing the itemIds
+     */
     std::vector<std::string> getEntriesTillPage();
 
     PocketItem *getCurrentEntry() { return getEntry(_selectedEntry); };

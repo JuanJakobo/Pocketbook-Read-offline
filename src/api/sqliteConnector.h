@@ -3,7 +3,7 @@
 //
 // Author:           JuanJakobo
 // Date:             18.07.2021
-// Description:
+// Description: Interface to store itms in a sqlite db
 //
 //-------------------------------------------------------------------
 
@@ -27,8 +27,10 @@ class SqliteConnector
 {
 public:
     /**
-    *  
-    */
+     * Creates a new database object
+     *
+     * @param DBpath the path where the database is placed
+     */
     SqliteConnector(const std::string &DBpath);
 
     /**
@@ -64,6 +66,11 @@ private:
     std::string _dbpath;
     sqlite3 *_db;
 
+    /**
+     * Opens the DB and creates the table if necessary
+     *
+     * @return true if was sucessfull
+     */
     bool open();
 };
 

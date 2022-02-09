@@ -22,14 +22,13 @@ public:
     ~ContextMenu();
 
     /**
-        * Shows the menu on the screen, lets the user choose menu options and then redirects the handler to the caller
-        * 
-        * @param y y-coordinate of the item 
-        * @param handler  which action does the menu buttons start 
-        * @param comments show if comments are available
-        * @param starred hide option if is already starred
-        * @return int returns if the event was handled
-        */
+     * Shows the menu on the screen, lets the user choose menu options and then redirects the handler to the caller
+     *
+     * @param y y-coordinate of the item
+     * @param handler  which action does the menu buttons start
+     * @param item that shall be handled
+     * @return int returns if the event was handled
+     */
     int createMenu(int y, const iv_menuhandler &handler, const PocketItem &item);
 
 

@@ -8,6 +8,7 @@
 
 #include "log.h"
 #include "eventHandler.h"
+#include "inkview.h"
 
 #include <string>
 #include <fstream>

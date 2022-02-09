@@ -9,8 +9,6 @@
 #ifndef UTIL
 #define UTIL
 
-#include "inkview.h"
-
 #include <string>
 
 enum Action
@@ -37,30 +35,68 @@ public:
     static size_t writeData(void *ptr, size_t size, size_t nmemb, FILE *stream);
 
     /**
-    * Checks if a network connection can be established
+    * Checks if a network connection can be established and
+    *
+    * @throws error that the network connection could not be established
     *
     */
     static void connectToNetwork();
 
     /**
-    * Reads an string from the config file
+    * Enables the access to the config file
     *
-    * @action
-    * @param name name of the config that shall be read
-    * @param value value that shall be written to the config
+    * @param actions taht shall be performed
+    * @param name of the config that shall be read
+    * @param value that shall be written to the config
     *
     * @return string that has been found in the config file
     */
     static std::string accessConfig(const Action &action, const std::string &name, const std::string &value = std::string());
 
+
+    /**
+     * Gets the data fom a URL (for example to download a picture)
+     *
+     * @param url the url where the data should be downlaoded from
+     *
+     * @throws error if the html file cannot be downloaded
+     *
+     * @return string the data that have been received from the URL
+     */
     static std::string getData(const std::string &url);
 
+    /**
+     * Removes chars that are forbidden in an path
+     *
+     * @param string that has to be changed
+     * @return string that has been adjusted
+     */
     static std::string clearString(std::string title);
 
+    /**
+     * Creates an html file, downloades the pictures and saves it to path
+     *
+     * @param title the name the html should be saved
+     * @param content the html content
+     *
+     * @return path where the html file is saved to
+     */
     static std::string createHtml(std::string title, std::string content);
 
+    /**
+     * Decode an html file and transform html tags
+     *
+     * @param data a reference to the data that shall be decoded
+     */
     static void decodeHTML(std::string &data);
 
+    /**
+     * Replace for a string all data with an other string
+     *
+     * @param data the complete text
+     * @param replace text that should be replaced
+     * @param by text by that the text should be replaced
+     */
     static void replaceAll(std::string &data, const std::string &replace, const std::string &by);
 
 private:

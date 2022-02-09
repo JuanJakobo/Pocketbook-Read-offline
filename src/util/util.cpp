@@ -8,7 +8,6 @@
 #include "util.h"
 #include "inkview.h"
 #include "eventHandler.h"
-
 #include "log.h"
 
 #include <string>
@@ -137,6 +136,7 @@ string Util::clearString(string title)
     return title;
 }
 
+//TODO use epub?
 string Util::createHtml(string title, string content)
 {
 

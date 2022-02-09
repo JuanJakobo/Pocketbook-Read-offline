@@ -7,6 +7,7 @@
 //-------------------------------------------------------------------
 
 #include "contextMenu.h"
+#include "inkview.h"
 
 #include <string>
 
@@ -19,6 +20,7 @@ ContextMenu::~ContextMenu()
     free(_menu);
     free(_star);
     free(_download);
+    free(_archive);
 }
 
 int ContextMenu::createMenu(int y, const iv_menuhandler &handler, const PocketItem &item)

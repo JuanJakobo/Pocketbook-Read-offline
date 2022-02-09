@@ -1,7 +1,7 @@
 //------------------------------------------------------------------
 // eventHandler.h
 //
-// Author:           JuanJakob
+// Author:           JuanJakobo
 // Date:             22.04.2021
 // Description:      Handles all events and directs them
 //-------------------------------------------------------------------
@@ -41,20 +41,20 @@ class EventHandler
 {
 public:
     /**
-        * Defines fonds, sets global Event Handler and starts new content 
-        */
+     * Defines fonds, sets global Event Handler and starts new content
+     */
     EventHandler();
 
     ~EventHandler();
 
     /**
-        * Handles events and redirects them
-        * 
-        * @param type event type
-        * @param par1 first argument of the event
-        * @param par2 second argument of the event
-        * @return int returns if the event was handled
-        */
+     * Handles events and redirects them
+     *
+     * @param type event type
+     * @param par1 first argument of the event
+     * @param par2 second argument of the event
+     * @return int returns if the event was handled
+     */
     int eventDistributor(const int type, const int par1, const int par2);
 
 private:
@@ -68,65 +68,72 @@ private:
     Views _currentView;
     int _pocketViewShownPage = 1;
 
-    void loginDialog();
-
     /**
-        * Function needed to call C function, redirects to real function
-        * 
-        *  @param index int of the menu that is set
-        */
+     * Function needed to call C function, redirects to real function
+     *
+     *  @param index int of the menu that is set
+     */
     static void mainMenuHandlerStatic(const int index);
 
     /**
-        * Handles menu events and redirects them
-        * 
-        * @param index int of the menu that is set
-        */
+     * Handles menu events and redirects them
+     *
+     * @param index int of the menu that is set
+     */
     void mainMenuHandler(const int index);
 
 
     /**
-        * Function needed to call C function, redirects to real function
-        * 
-        *  @param index int of the menu that is set
-        */
+     * Function needed to call C function, redirects to real function
+     *
+     *  @param index int of the menu that is set
+     */
     static void contextMenuHandlerStatic(const int index);
 
     /**
-        * Handlescontext  menu events and redirects them
-        * 
-        * @param index int of the menu that is set
-        */
-
+     * Handles context  menu events and redirects them
+     *
+     * @param index int of the menu that is set
+     */
     void contextMenuHandler(const int index);
 
     /**
-        * Handles pointer Events
-        * 
-        * @param type event type
-        * @param par1 first argument of the event
-        * @param par2 second argument of the event
-        * @return int returns if the event was handled
-        */
+     * Handles pointer Events
+     *
+     * @param type event type
+     * @param par1 first argument of the event
+     * @param par2 second argument of the event
+     * @return int returns if the event was handled
+     */
     int pointerHandler(const int type, const int par1, const int par2);
 
     /**
-        * Handles key Events
-        * 
-        * @param type event type
-        * @param par1 first argument of the event (is the key)
-        * @param par2 second argument of the event
-        * @return int returns if the event was handled
-        */
+     * Handles key Events
+     *
+     * @param type event type
+     * @param par1 first argument of the event (is the key)
+     * @param par2 second argument of the event
+     * @return int returns if the event was handled
+     */
     int keyHandler(const int type, const int par1, const int par2);
 
 
+    /**
+     * Draws pocket items to a screen
+     *
+     * @param vector of the pocketItems that shall be drawn
+     *
+     * @return true if the items could be drawn an the item size is bigger than 0
+     */
     bool drawPocketItems(const std::vector<PocketItem> &pocketItems);
 
     /**
-     * 
+     *
      * Draws the pocket items to an ListView
-     * 
+     *
+     * @param status the status of the items
+     * @param favorited if the favorited should be drawn
+     *
      */
     void filterAndDrawPocket(IStatus status, bool favorited);
 
