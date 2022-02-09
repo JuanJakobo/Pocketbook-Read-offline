@@ -195,6 +195,11 @@ void EventHandler::contextMenuHandler(const int index)
                     HideHourglass();
                     break;
                 }
+            default:
+                {
+                    _pocketView->invertCurrentEntryColor();
+                    break;
+                }
         }
     }
     catch (const std::exception &e)
