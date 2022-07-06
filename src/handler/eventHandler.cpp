@@ -65,7 +65,6 @@ EventHandler::EventHandler()
 
 EventHandler::~EventHandler()
 {
-    Log::writeInfoLog("delete eventHandler");
 }
 
 int EventHandler::eventDistributor(const int type, const int par1, const int par2)
