@@ -37,7 +37,7 @@ void PocketViewEntry::draw(const ifont *entryFont, const ifont *entryFontBold, i
     DrawTextRect(_position.x, _position.y + heightOfTitle, _position.w, fontHeight, shortendURL.c_str(), ALIGN_LEFT);
 
     std::string textLeft;
-    if(_entry.downloaded == IsDownloaded::DOWNLOADED)
+    if(_entry.downloaded == PIsDownloaded::PDOWNLOADED)
         textLeft = "downloaded";
     if (_entry.starred)
     {

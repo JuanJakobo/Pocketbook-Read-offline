@@ -21,14 +21,14 @@ SqliteConnector::SqliteConnector(const string &DBpath) : _dbpath(DBpath)
 {
 }
 
-vector<PocketItem> SqliteConnector::selectPocketEntries(IsDownloaded downloaded)
+vector<PocketItem> SqliteConnector::selectPocketEntries(PIsDownloaded downloaded)
 {
     open();
     int rs;
     sqlite3_stmt *stmt = 0;
     vector<PocketItem> entries;
 
-    if(downloaded == IsDownloaded::INVALID)
+    if(downloaded == PIsDownloaded::PINVALID)
     {
         rs = sqlite3_prepare_v2(_db, "SELECT id, status, title, url, excerpt, path, reading_time, starred, downloaded FROM 'PocketItems';", -1, &stmt, 0);
     }
@@ -52,7 +52,7 @@ vector<PocketItem> SqliteConnector::selectPocketEntries(IsDownloaded downloaded)
 						temp.path =  reinterpret_cast<const char *>(sqlite3_column_text(stmt, 5));
 						temp.reading_time = sqlite3_column_int(stmt, 6);
 						temp.starred = (sqlite3_column_int(stmt, 7) == 1) ? true : false;
-						temp.downloaded =  static_cast<IsDownloaded>(sqlite3_column_int(stmt,8));
+						temp.downloaded =  static_cast<PIsDownloaded>(sqlite3_column_int(stmt,8));
 						entries.push_back(temp);
     }
     sqlite3_finalize(stmt);

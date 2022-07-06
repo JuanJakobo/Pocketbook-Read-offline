@@ -48,13 +48,14 @@ EventHandler::EventHandler()
         iv_mkdir(IMAGE_FOLDER.c_str(), 0777);
 
     _pocket = std::unique_ptr<Pocket>(new Pocket());
-    _items = _sqliteCon.selectPocketEntries(IsDownloaded::DOWNLOADED);
+
+    _items = _sqliteCon.selectPocketEntries(PIsDownloaded::PDOWNLOADED);
     for(size_t i = 0; i < _items.size(); i++)
     {
         if (iv_access(_items.at(i).path.c_str(), W_OK) != 0)
         {
-            _items.at(i).downloaded =  IsDownloaded::NOTDOWNLOADED;
-            _sqliteCon.updatePocketItem(_items.at(i).id,UpdateAction::IDOWNLOADED, IsDownloaded::NOTDOWNLOADED);
+            _items.at(i).downloaded =  PIsDownloaded::PNOTDOWNLOADED;
+            _sqliteCon.updatePocketItem(_items.at(i).id,UpdateAction::IDOWNLOADED, PIsDownloaded::PNOTDOWNLOADED);
             break;
         }
     }
@@ -89,7 +90,7 @@ void EventHandler::mainMenuHandler(const int index)
         //show downloaded
         case 101:
             {
-                _items = _sqliteCon.selectPocketEntries(IsDownloaded::DOWNLOADED);
+                _items = _sqliteCon.selectPocketEntries(PIsDownloaded::PDOWNLOADED);
                 drawPocketItems(_items);
                 break;
             }
@@ -109,7 +110,7 @@ void EventHandler::mainMenuHandler(const int index)
         case 104:
             {
                 _pocket->sendItems(PocketAction::ARCHIVE, _pocketView->getEntriesTillPage());
-                _items = _sqliteCon.selectPocketEntries(IsDownloaded::DOWNLOADED);
+                _items = _sqliteCon.selectPocketEntries(PIsDownloaded::PDOWNLOADED);
                 drawPocketItems(_items);
                 break;
             }
@@ -141,10 +142,10 @@ void EventHandler::contextMenuHandler(const int index)
             //Mark/Unmark to download
             case 101:
                 {
-                    if(_pocketView->getCurrentEntry()->downloaded != IsDownloaded::DOWNLOADED)
+                    if(_pocketView->getCurrentEntry()->downloaded != PIsDownloaded::PDOWNLOADED)
                     {
                         _pocket->getText(_pocketView->getCurrentEntry());
-                        _pocketView->getCurrentEntry()->downloaded = IsDownloaded::DOWNLOADED;
+                        _pocketView->getCurrentEntry()->downloaded = PIsDownloaded::PDOWNLOADED;
                     }
                     else
                     {
@@ -152,7 +153,7 @@ void EventHandler::contextMenuHandler(const int index)
                         string title = _pocketView->getCurrentEntry()->title;
                         string cmd = "rm -rf \"" + ARTICLE_FOLDER + "/img/" + title + "/\"";
                         system(cmd.c_str());
-                        _pocketView->getCurrentEntry()->downloaded = IsDownloaded::NOTDOWNLOADED;
+                        _pocketView->getCurrentEntry()->downloaded = PIsDownloaded::PNOTDOWNLOADED;
                     }
                     _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, UpdateAction::IDOWNLOADED, _pocketView->getCurrentEntry()->downloaded);
                     _pocketView->reDrawCurrentEntry();
@@ -246,11 +247,11 @@ int EventHandler::pointerHandler(const int type, const int par1, const int par2)
                     case 1:
                         {
                             try{
-                                if(_pocketView->getCurrentEntry()->downloaded == IsDownloaded::NOTDOWNLOADED)
+                                if(_pocketView->getCurrentEntry()->downloaded == PIsDownloaded::PNOTDOWNLOADED)
                                 {
                                     _pocket->getText(_pocketView->getCurrentEntry());
-                                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, UpdateAction::IDOWNLOADED, IsDownloaded::DOWNLOADED);
-                                    _pocketView->getCurrentEntry()->downloaded = IsDownloaded::DOWNLOADED;
+                                    _sqliteCon.updatePocketItem(_pocketView->getCurrentEntry()->id, UpdateAction::IDOWNLOADED, PIsDownloaded::PDOWNLOADED);
+                                    _pocketView->getCurrentEntry()->downloaded = PIsDownloaded::PDOWNLOADED;
                                     _pocketView->reDrawCurrentEntry();
                                 }
                                 else

@@ -20,11 +20,11 @@ enum IStatus
     TODELETE
 };
 
-enum IsDownloaded
+enum PIsDownloaded
 {
-				NOTDOWNLOADED,
-				DOWNLOADED,
-                INVALID
+				PNOTDOWNLOADED,
+				PDOWNLOADED,
+                PINVALID
 };
 
 struct PocketItem : Entry
@@ -36,7 +36,7 @@ struct PocketItem : Entry
     std::string path;
     int reading_time; //in min
     bool starred;
-    IsDownloaded downloaded = IsDownloaded::NOTDOWNLOADED;
+    PIsDownloaded downloaded = PIsDownloaded::PNOTDOWNLOADED;
 };
 
 #endif

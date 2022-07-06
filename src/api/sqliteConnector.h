@@ -38,9 +38,9 @@ public:
      *
      * @return vector of PocketItems that has been received
      *
-     * @param IsDownloaded the downloaded status of the pocket items
+     * @param PIsDownloaded the downloaded status of the pocket items
      */
-    std::vector<PocketItem> selectPocketEntries(IsDownloaded download = IsDownloaded::INVALID);
+    std::vector<PocketItem> selectPocketEntries(PIsDownloaded download = PIsDownloaded::PINVALID);
 
     /**
      * Update pocket items in DB

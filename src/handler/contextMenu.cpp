@@ -26,7 +26,7 @@ ContextMenu::~ContextMenu()
 int ContextMenu::createMenu(int y, const iv_menuhandler &handler, const PocketItem &item)
 {
     std::string text = "Remove item";
-    if(item.downloaded == IsDownloaded::NOTDOWNLOADED)
+    if(item.downloaded == PIsDownloaded::PNOTDOWNLOADED)
         text = "Download item";
     _download = strdup(text.c_str());
 
