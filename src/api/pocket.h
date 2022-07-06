@@ -38,6 +38,14 @@ class Pocket
         Pocket();
 
         /**
+        * Adds an URL to pocket
+        * If multiple URLs shall be added modify should be used
+        *
+        * @param url that shall be added to pocket
+        */
+        void addItems(const std::string &url);
+
+        /**
          * Retrieve a Users Pocket Data
          *
          * @return vector of PocketItems that has been received

@@ -74,6 +74,16 @@ void Pocket::getAccessToken(const string &code){
     }
 }
 
+void Pocket::addItems(const string &url)
+{
+    //TODO curl url-encode url
+    string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + _accessToken  + "\",\"url\":\"" + url + "\"}";
+    Log::writeInfoLog(postData);
+    nlohmann::json j = post("add",postData);
+    Log::writeInfoLog("wrote");
+}
+
+
 vector<PocketItem> Pocket::getItems()
 {
     string postData = "{\"consumer_key\":\"" + CONSUMER_KEY + "\", \"access_token\":\"" + _accessToken  + "\",\"detailType\":\"simple\",\"contentType\":\"article\",\"state\":\"all\"";
