@@ -34,8 +34,8 @@ struct PocketItem : Entry
     std::string url;
     std::string excerpt;
     std::string path;
-    int reading_time; //in min
-    bool starred;
+    int reading_time = 0; //in min
+    bool starred = false;
     PIsDownloaded downloaded = PIsDownloaded::PNOTDOWNLOADED;
 };
 

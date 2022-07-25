@@ -52,6 +52,7 @@ void PocketViewEntry::draw(const ifont *entryFont, const ifont *entryFontBold, i
     else
         textLeft = "archived";
     DrawTextRect(_position.x, _position.y + heightOfTitle, _position.w, fontHeight, textLeft.c_str(), ALIGN_RIGHT);
+
     if (_entry.reading_time > 0)
         DrawTextRect(_position.x, _position.y + heightOfTitle + fontHeight, _position.w, fontHeight, (std::to_string(_entry.reading_time) + " min").c_str(), ALIGN_RIGHT);
 
