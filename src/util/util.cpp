@@ -10,10 +10,11 @@
 #include "eventHandler.h"
 #include "log.h"
 
-#include <string>
+#include <algorithm>
 #include <curl/curl.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <string>
 
 using std::string;
 
@@ -102,6 +103,7 @@ string Util::getData(const string &url)
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Util::writeCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
