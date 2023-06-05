@@ -1,3 +1,4 @@
+#pragma once
 //------------------------------------------------------------------
 // pocketModel.h
 //
@@ -5,10 +6,6 @@
 // Date:             23.04.2021
 // Description:      Describes the structure of an pocket item
 //-------------------------------------------------------------------
-
-#ifndef POCKETMODEL
-#define POCKETMODEL
-
 #include "model.h"
 
 #include <string>
@@ -22,21 +19,19 @@ enum IStatus
 
 enum PIsDownloaded
 {
-				PNOTDOWNLOADED,
-				PDOWNLOADED,
-                PINVALID
+    PNOTDOWNLOADED,
+    PDOWNLOADED,
+    PINVALID
 };
 
 struct PocketItem : Entry
 {
     std::string title;
-    IStatus  status;
+    IStatus status;
     std::string url;
     std::string excerpt;
     std::string path;
-    int reading_time = 0; //in min
-    bool starred = false;
-    PIsDownloaded downloaded = PIsDownloaded::PNOTDOWNLOADED;
+    int reading_time; // in min
+    bool starred;
+    PIsDownloaded downloaded{PIsDownloaded::PNOTDOWNLOADED};
 };
-
-#endif
