@@ -131,7 +131,7 @@ vector<PocketItem> Pocket::getItems()
         PocketItem temp;
         if (element["item_id"].isString())
         {
-            temp.id = element["item_id"].asInt();
+            temp.id = element["item_id"].asString();
         }
         if (element["given_url"].isString())
         {
@@ -139,7 +139,7 @@ vector<PocketItem> Pocket::getItems()
         }
         if (element.isMember("favorite"))
         {
-            temp.starred = (element["favorite"].asString() == "0");
+            temp.starred = (element["favorite"].asString() != "0");
         }
         if (element.isMember("status"))
         {
